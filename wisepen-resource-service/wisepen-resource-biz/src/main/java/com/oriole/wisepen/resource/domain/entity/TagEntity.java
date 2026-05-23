@@ -35,7 +35,6 @@ public class TagEntity extends TagInfoBase {
     private ResourceMountMode resourceMountMode;
     private List<String> aclGrantSpecifiedUsers; // 配合白名单/黑名单使用的 userId 列表
     private List<String> resourceMountSpecifiedUsers; // 资源挂载白名单/黑名单用户列表
-    private Integer grantedActionsMask;  // 匹配该标签时授予的权限掩码
 
     @CreatedDate
     private LocalDateTime createTime;

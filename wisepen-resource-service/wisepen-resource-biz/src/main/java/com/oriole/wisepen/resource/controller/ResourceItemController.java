@@ -73,11 +73,11 @@ public class ResourceItemController {
             // 资源所有者或小组管理员可以修改资源挂载的小组标签
             groupRole = SecurityContextHolder.getGroupRole(Long.parseLong(req.getGroupId()));
             if (groupRole != GroupRoleType.ADMIN && groupRole != GroupRoleType.OWNER) {
-                // 非小组管理员不能添加或修改资源挂载的小组标签，除非是资源所有者
+                // 非小组管理员不能添加或修改资源挂载的小组标签，除非是资源所有者且拥有该标签的资源挂载权限
                 resourceService.assertResourceOwner(req.getResourceId(), userId);
+                resourceService.assertResourceMountPermission(userId, req.getGroupId(), groupRole, req.getTagIds());
             }
         }
-        resourceService.assertResourceMountPermission(userId, req.getGroupId(), groupRole, req.getTagIds());
         resourceService.updateResourceTags(req);
         return R.ok();
     }

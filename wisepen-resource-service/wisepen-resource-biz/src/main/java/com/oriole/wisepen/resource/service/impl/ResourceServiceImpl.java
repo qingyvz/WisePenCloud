@@ -246,20 +246,13 @@ public class ResourceServiceImpl implements IResourceService {
             return;
         }
 
-        List<TagEntity> validTags = tagRepository.findAllById(tagIds);
-        if (validTags.size() != tagIds.size()) {
-            throw new ServiceException(ResPermissionErrorCode.TAG_NOT_FOUND);
-        }
-        boolean allBelongToGroup = validTags.stream().allMatch(tag -> groupId.equals(tag.getGroupId()));
-        if (!allBelongToGroup) {
-            throw new ServiceException(ResPermissionErrorCode.TAG_NOT_FOUND);
-        }
+        List<TagEntity> tags = tagRepository.findAllById(tagIds);
 
         Integer defaultActions = groupResConfigRepository.findByGroupId(groupId)
                 .map(GroupResConfigEntity::getDefaultMemberActionsMask)
                 .orElse(ResourceAction.DEFAULT_MEMBER_ACTIONS);
 
-        for (TagEntity tag : validTags) {
+        for (TagEntity tag : tags) {
             ResolvedTagPermission resolved = resolveTagPermission(tag, defaultActions);
             boolean canMount = (resolved.resourceMountMode == ResourceMountMode.ALL ||
                     (resolved.resourceMountMode == ResourceMountMode.WHITELIST && resolved.resourceMountSpecifiedUsers.contains(userId)) ||
