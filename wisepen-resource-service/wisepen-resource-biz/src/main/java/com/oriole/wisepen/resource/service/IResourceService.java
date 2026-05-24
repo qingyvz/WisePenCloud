@@ -53,5 +53,4 @@ public interface IResourceService {
     ResourceCheckPermissionResDTO checkPermission(ResourceCheckPermissionReqDTO dto);
 
     void stripGroupPermission(List<String> trashedTagIds);
-
 }

@@ -71,7 +71,6 @@ public class NoteController {
                 .noteInfo(noteInfo)
                 .authorsDisplay(authorsDisplay)
                 .build();
-
         return R.ok(noteInfoResponse);
     }
 

@@ -1,5 +1,6 @@
 server:
   port: 19905 # 本地启动占用 19905 端口
+
 spring:
   application:
     name: wisepen-resource-service # 服务名，也是 Nacos 里的 Data ID

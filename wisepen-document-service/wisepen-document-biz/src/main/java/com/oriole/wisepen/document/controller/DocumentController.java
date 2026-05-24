@@ -89,7 +89,6 @@ public class DocumentController {
                 resourceId, SecurityContextHolder.getUserId(), SecurityContextHolder.getGroupRoleMap()
         )).getData();
         if (permission.getResourceAccessRole() == ResourceAccessRole.OWNER || permission.getAllowedActions().contains(ResourceAction.VIEW)) {
-            // 预览不计入有效阅读量，此处不调用 recordResourceRead
             documentPreviewService.handlePreviewRequest(request, response, resourceId, userId);
         } else {
             throw new ServiceException(DOCUMENT_PERMISSION_DENIED);
@@ -105,7 +104,6 @@ public class DocumentController {
         )).getData();
         DocumentInfoBase documentInfo = documentService.getDocumentInfo(resourceId);
         DocumentInfoResponse documentInfoResponse = DocumentInfoResponse.builder().resourceInfo(resourceInfo).documentInfo(documentInfo).build();
-
         return R.ok(documentInfoResponse);
     }
 }
