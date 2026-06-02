@@ -32,10 +32,10 @@ public enum ResourceType {
     AGENT(32, "AGENT", "agent"),
     UNKNOWN(99, "UNKNOWN", "unknown");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 
     private final String extension;

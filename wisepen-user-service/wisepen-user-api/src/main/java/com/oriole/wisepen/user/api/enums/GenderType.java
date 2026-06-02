@@ -13,9 +13,9 @@ public enum GenderType {
     FEMALE(1, "FEMALE"),
     UNKNOWN(2, "UNKNOWN");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

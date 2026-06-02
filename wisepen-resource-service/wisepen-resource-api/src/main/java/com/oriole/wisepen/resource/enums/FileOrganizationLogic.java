@@ -12,10 +12,10 @@ public enum FileOrganizationLogic {
     FOLDER(1, "FOLDER"),
     TAG(2, "TAG");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 
     // 兼容此前传值

@@ -13,9 +13,9 @@ public enum TokenTransactionType {
 	TRANSFER_IN(3, "TRANSFER_IN"),
 	TRANSFER_OUT(4, "TRANSFER_OUT");
 
-	@EnumValue
-	@JsonValue
 	private final int code;
 
+	@EnumValue
+	@JsonValue
 	private final String value;
 }

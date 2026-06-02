@@ -20,9 +20,9 @@ public enum DocumentStatusEnum {
     REGISTERING_RES_TIMEOUT(-2, "REGISTERING_RES_TIMEOUT"),
     FAILED(-3, "FAILED");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

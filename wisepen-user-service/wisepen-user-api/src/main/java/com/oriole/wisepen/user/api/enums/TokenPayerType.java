@@ -11,9 +11,9 @@ public enum TokenPayerType {
 	USER(1,"USER"),
 	GROUP(2,"GROUP");
 
-	@EnumValue
-	@JsonValue
 	private final int code;
 
+	@EnumValue
+	@JsonValue
 	private final String value;
 }

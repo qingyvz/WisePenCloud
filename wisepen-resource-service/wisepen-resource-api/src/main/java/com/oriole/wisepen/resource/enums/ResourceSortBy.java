@@ -13,10 +13,10 @@ public enum ResourceSortBy {
     NAME(3, "NAME", "resourceName"),
     SIZE(4, "SIZE", "size");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 
     private final String dbField;

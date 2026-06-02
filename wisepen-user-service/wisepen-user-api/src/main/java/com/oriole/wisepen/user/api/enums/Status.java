@@ -13,9 +13,9 @@ public enum Status {
     UNIDENTIFIED(-1, "UNIDENTIFIED"),
     BANNED(-2, "BANNED");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

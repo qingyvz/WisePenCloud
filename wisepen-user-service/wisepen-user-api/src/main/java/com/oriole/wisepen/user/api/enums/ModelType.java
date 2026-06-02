@@ -12,8 +12,9 @@ public enum ModelType {
 	ADVANCED_MODEL(2,"ADVANCED_MODEL"),
 	UNKNOWN_MODEL(3,"UNKNOWN_MODEL");
 
+	private final int code;
+
 	@EnumValue
 	@JsonValue
-	private final int code;
 	private final String value;
 }

@@ -19,10 +19,10 @@ public enum StorageSceneEnum {
     PRIVATE_IMAGE_FOR_NOTE(3, "PRIVATE_IMAGE_FOR_NOTE", "public/images/note"),  // 私密图床，如笔记中的图片
     PRIVATE_DOC(4, "PRIVATE_DOC", "private/docs");      // 文档，如 PDF、Word，永远在私有域
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
     private final String prefix;
 

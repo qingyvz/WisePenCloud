@@ -11,9 +11,9 @@ public enum UserVerificationMode {
     EDU_EMAIL(1, "EDU_EMAIL"),
     FDU_UIS_SYS(2, "FDU_UIS_SYS");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

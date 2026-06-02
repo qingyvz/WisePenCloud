@@ -14,9 +14,9 @@ public enum FeedbackType {
     COMPLAINT(4, "COMPLAINT"),
     OTHER(99, "OTHER");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

@@ -12,9 +12,9 @@ public enum StorageProviderEnum {
     MINIO(2, "MINIO"),
     TENCENT_COS(3, "TENCENT_COS");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

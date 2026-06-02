@@ -14,9 +14,9 @@ public enum ResourceAccessRole {
     GROUP_MEMBER(1, "GROUP_MEMBER"),
     NONE(0, "NONE");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

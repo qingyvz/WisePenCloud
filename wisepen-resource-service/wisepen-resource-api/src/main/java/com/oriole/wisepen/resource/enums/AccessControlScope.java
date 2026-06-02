@@ -14,9 +14,9 @@ public enum AccessControlScope {
     WHITELIST(2, "WHITELIST"),    // 仅白名单内用户
     BLACKLIST(3, "BLACKLIST");    // 仅黑名单外用户
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

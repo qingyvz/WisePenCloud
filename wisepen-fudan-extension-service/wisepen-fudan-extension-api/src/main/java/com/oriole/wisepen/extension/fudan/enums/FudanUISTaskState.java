@@ -15,9 +15,9 @@ public enum FudanUISTaskState {
     FAILED_AUTH(-2, "FAILED_AUTH"), // 账号密码错误或需进行其他验证
     FAILED_TIMEOUT(-3, "FAILED_TIMEOUT"); // 扫码超时
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

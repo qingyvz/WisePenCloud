@@ -11,9 +11,9 @@ public enum VersionType {
     FULL(1, "FULL"),
     DELTA(2, "DELTA");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

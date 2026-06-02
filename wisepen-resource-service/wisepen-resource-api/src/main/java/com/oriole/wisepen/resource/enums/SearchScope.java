@@ -15,9 +15,10 @@ public enum SearchScope {
     DOCUMENT(2,"DOCUMENT"),
     NOTE(3, "NOTE");
 
+    private final int code;
+
     @EnumValue
     @JsonValue
-    private final int code;
     private final String value;
 
     /**

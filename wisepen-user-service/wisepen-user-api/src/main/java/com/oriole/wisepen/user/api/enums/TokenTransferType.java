@@ -11,9 +11,9 @@ public enum TokenTransferType {
     GROUP_INFLOW(1, "GROUP_INFLOW"),
     USER_INFLOW(2, "USER_INFLOW");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

@@ -14,9 +14,9 @@ public enum FeedbackStatus {
     IGNORED(3, "IGNORED"),
     CLOSED(4, "CLOSED");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

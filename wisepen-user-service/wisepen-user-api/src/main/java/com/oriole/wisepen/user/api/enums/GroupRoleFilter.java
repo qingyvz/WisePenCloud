@@ -10,8 +10,10 @@ import lombok.Getter;
 public enum GroupRoleFilter {
     JOINED(1,"JOINED"),
     MANAGED(2,"MANAGED");
+
+    private final int code;
+
     @EnumValue
     @JsonValue
-    private final int code;
     private final String value;
 }

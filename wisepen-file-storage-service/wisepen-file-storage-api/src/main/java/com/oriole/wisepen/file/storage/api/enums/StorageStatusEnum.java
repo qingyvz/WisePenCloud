@@ -12,9 +12,9 @@ public enum StorageStatusEnum {
     AVAILABLE(2, "AVAILABLE"),
     DELETED(3, "DELETED");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }

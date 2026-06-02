@@ -12,9 +12,9 @@ public enum VoucherStatus {
 	USED(2,"USED"),
 	DISABLED(3,"DISABLED");
 
-	@EnumValue
-	@JsonValue
 	private final int code;
 
+	@EnumValue
+	@JsonValue
 	private final String value;
 }

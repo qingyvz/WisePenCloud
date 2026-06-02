@@ -14,9 +14,9 @@ public enum DegreeLevel {
     MASTER(2, "MASTER"),
     DOCTOR(3, "DOCTOR");
 
-    @EnumValue
-    @JsonValue
     private final int code;
 
+    @EnumValue
+    @JsonValue
     private final String value;
 }
