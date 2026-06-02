@@ -15,8 +15,7 @@ public interface SearchConstants {
     int HIGHLIGHT_MAX_FRAGMENTS = 3;
     String HIGHLIGHT_FRAGMENT_SEPARATOR = "...";
 
-    String ES_DATE_FORMAT_PATTERN =
-            "yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||epoch_millis";
+    String ES_DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     int MIN_PAGE_NUM = 1;
     int DEFAULT_PAGE_NUM = 1;
