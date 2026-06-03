@@ -2,23 +2,17 @@ package com.oriole.wisepen.ai.asset.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.oriole.wisepen.common.core.exception.ServiceException;
-import com.oriole.wisepen.file.storage.api.domain.dto.UploadInitRespDTO;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillAssetUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillCreateRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoRequest;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillManifestUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillUpdateRequest;
-import com.oriole.wisepen.ai.asset.domain.entity.SkillAssetEntity;
 import com.oriole.wisepen.ai.asset.domain.entity.SkillEntity;
-import com.oriole.wisepen.ai.asset.domain.entity.SkillVersionEntity;
-import com.oriole.wisepen.ai.asset.domain.base.SkillAssetMetaBase;
-import com.oriole.wisepen.ai.asset.domain.base.SkillVersionBase;
 import com.oriole.wisepen.ai.asset.enums.SkillAuditStatusEnum;
+import com.oriole.wisepen.ai.asset.enums.SkillSourceTypeEnum;
 import com.oriole.wisepen.ai.asset.enums.SkillStatusEnum;
 import com.oriole.wisepen.ai.asset.exception.SkillError;
 import com.oriole.wisepen.ai.asset.repository.SkillRepository;
+import com.oriole.wisepen.ai.asset.repository.SkillVersionRepository;
 import com.oriole.wisepen.ai.asset.service.ISkillService;
-import com.oriole.wisepen.ai.asset.service.ISkillStorageService;
 import com.oriole.wisepen.resource.domain.dto.ResourceCreateReqDTO;
 import com.oriole.wisepen.resource.enums.ResourceType;
 import com.oriole.wisepen.resource.feign.RemoteResourceService;
@@ -35,12 +29,12 @@ public class SkillServiceImpl implements ISkillService {
 
     private final SkillRepository skillRepository;
     private final RemoteResourceService remoteResourceService;
-    private final ISkillStorageService skillStorageService;
+    private final SkillVersionRepository skillVersionRepository;
 
     @Override
     public String createSkill(SkillCreateRequest dto, String userId) {
         ResourceCreateReqDTO resourceReq = ResourceCreateReqDTO.builder()
-                .resourceName(dto.getEffectiveName())
+                .resourceName(dto.getName())
                 .resourceType(ResourceType.SKILL)
                 .ownerId(userId)
                 .build();
@@ -49,34 +43,36 @@ public class SkillServiceImpl implements ISkillService {
             throw new ServiceException(SkillError.SKILL_RESOURCE_REGISTER_FAILED);
         }
 
-        SkillEntity entity = new SkillEntity();
-        entity.setResourceId(resourceId);
-        entity.setName(dto.getEffectiveName());
-        entity.setOwnerId(userId);
-        entity.setDescription(dto.getDescription() == null ? "" : dto.getDescription());
-        entity.setVersion(0);
-        entity.setSourceType(dto.getSourceType() == null ? com.oriole.wisepen.ai.asset.enums.SkillSourceTypeEnum.MANUAL : dto.getSourceType());
-        entity.setSkillStatus(SkillStatusEnum.DRAFT);
-        entity.setAuditStatus(SkillAuditStatusEnum.NOT_SUBMITTED);
+        SkillEntity entity = SkillEntity.builder()
+                .resourceId(resourceId)
+                .name(dto.getName())
+                .ownerId(userId)
+                .description(dto.getDescription() == null ? "" : dto.getDescription())
+                .version(0)
+                .sourceType(dto.getSourceType() == null ? SkillSourceTypeEnum.MANUAL : dto.getSourceType())
+                .skillStatus(SkillStatusEnum.DRAFT)
+                .auditStatus(SkillAuditStatusEnum.NOT_SUBMITTED)
+                .build();
         skillRepository.save(entity);
         return resourceId;
     }
 
     @Override
     @Transactional
-    public void deleteSkills(List<String> skillIds) {
-        if (skillIds == null || skillIds.isEmpty()) {
+    public void deleteSkills(List<String> resourceIds) {
+        if (resourceIds == null || resourceIds.isEmpty()) {
             return;
         }
-        skillRepository.deleteBySkillIdIn(skillIds);
+        skillRepository.deleteByResourceIdIn(resourceIds);
+        skillVersionRepository.deleteByResourceIdIn(resourceIds);
     }
 
     @Override
     public void updateSkill(SkillUpdateRequest dto) {
-        SkillEntity entity = skillRepository.findByResourceId(dto.getEffectiveResourceId())
+        SkillEntity entity = skillRepository.findByResourceId(dto.getResourceId())
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
-        if (dto.getEffectiveName() != null) {
-            entity.setName(dto.getEffectiveName());
+        if (dto.getName() != null) {
+            entity.setName(dto.getName());
         }
         if (dto.getDescription() != null) {
             entity.setDescription(dto.getDescription());
@@ -85,93 +81,9 @@ public class SkillServiceImpl implements ISkillService {
     }
 
     @Override
-    public SkillInfoRequest getSkillInfo(String skillId) {
-        SkillEntity entity = skillRepository.findByResourceId(skillId)
+    public SkillInfoRequest getSkillInfo(String resourceId) {
+        SkillEntity entity = skillRepository.findByResourceId(resourceId)
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
-        SkillInfoRequest response = BeanUtil.copyProperties(entity, SkillInfoRequest.class);
-        if (entity.getCurrentVersionInfo() != null) {
-            SkillVersionBase versionBase = new SkillVersionBase();
-            versionBase.setVersion(entity.getCurrentVersionInfo().getVersion());
-            versionBase.setSkillMdObjectKey(entity.getCurrentVersionInfo().getSkillMdObjectKey());
-            versionBase.setPublished(entity.getCurrentVersionInfo().getPublished());
-            versionBase.setEnabled(entity.getCurrentVersionInfo().getEnabled());
-            for (SkillAssetEntity asset : entity.getCurrentVersionInfo().getAssetsManifest()) {
-                versionBase.getAssetsManifest().add(BeanUtil.copyProperties(asset, SkillAssetMetaBase.class));
-            }
-            response.setCurrentVersionInfo(versionBase);
-        }
-        return response;
-    }
-
-    @Override
-    public UploadInitRespDTO initManifestUpload(SkillManifestUploadInitRequest dto) {
-        validateVersion(dto.getVersion());
-        SkillEntity entity = skillRepository.findByResourceId(dto.getSkillId())
-                .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
-
-        UploadInitRespDTO response = skillStorageService.initManifestUpload(
-                dto.getSkillId(), dto.getVersion(), dto.getMd5(), dto.getExpectedSize()
-        );
-
-        SkillVersionEntity versionInfo = getOrCreateCurrentVersion(entity, dto.getVersion());
-        versionInfo.setSkillMdObjectKey(response.getObjectKey());
-        skillRepository.save(entity);
-        return response;
-    }
-
-    @Override
-    public UploadInitRespDTO initAssetUpload(SkillAssetUploadInitRequest dto) {
-        validateVersion(dto.getVersion());
-        validateRelativePath(dto.getRelativePath());
-        SkillEntity entity = skillRepository.findByResourceId(dto.getSkillId())
-                .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
-
-        UploadInitRespDTO response = skillStorageService.initAssetUpload(
-                dto.getSkillId(), dto.getVersion(), dto.getRelativePath(), dto.getMd5(), dto.getExpectedSize()
-        );
-
-        SkillVersionEntity versionInfo = getOrCreateCurrentVersion(entity, dto.getVersion());
-        SkillAssetEntity asset = findOrCreateAsset(versionInfo, dto.getRelativePath());
-        asset.setObjectKey(response.getObjectKey());
-        asset.setKind(dto.getKind());
-        asset.setSizeBytes(dto.getExpectedSize());
-        skillRepository.save(entity);
-        return response;
-    }
-
-    private SkillVersionEntity getOrCreateCurrentVersion(SkillEntity entity, String version) {
-        SkillVersionEntity versionInfo = entity.getCurrentVersionInfo();
-        if (versionInfo == null || versionInfo.getVersion() == null || !version.equals(versionInfo.getVersion())) {
-            versionInfo = new SkillVersionEntity();
-            versionInfo.setVersion(version);
-            entity.setCurrentVersionInfo(versionInfo);
-        }
-        return versionInfo;
-    }
-
-    private SkillAssetEntity findOrCreateAsset(SkillVersionEntity versionInfo, String relativePath) {
-        for (SkillAssetEntity item : versionInfo.getAssetsManifest()) {
-            if (relativePath.equals(item.getPath())) {
-                return item;
-            }
-        }
-        SkillAssetEntity asset = new SkillAssetEntity();
-        asset.setPath(relativePath);
-        versionInfo.getAssetsManifest().add(asset);
-        return asset;
-    }
-
-    private void validateVersion(String version) {
-        if (version == null || version.isBlank() || version.contains("/") || version.contains("\\")
-                || ".".equals(version) || "..".equals(version)) {
-            throw new ServiceException(SkillError.SKILL_VERSION_INVALID);
-        }
-    }
-
-    private void validateRelativePath(String relativePath) {
-        if (relativePath == null || relativePath.isBlank() || relativePath.startsWith("/")
-                || relativePath.contains("\\") || List.of(relativePath.split("/")).contains("..")) {
-            throw new ServiceException(SkillError.SKILL_RELATIVE_PATH_INVALID);
-        }
+        return BeanUtil.copyProperties(entity, SkillInfoRequest.class);
     }
 }

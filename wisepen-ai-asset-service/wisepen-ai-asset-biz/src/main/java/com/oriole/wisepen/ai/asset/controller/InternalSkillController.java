@@ -3,12 +3,12 @@ package com.oriole.wisepen.ai.asset.controller;
 import com.oriole.wisepen.common.core.context.SecurityContextHolder;
 import com.oriole.wisepen.common.core.domain.R;
 import com.oriole.wisepen.file.storage.api.domain.dto.UploadInitRespDTO;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillAssetUploadInitRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillAssetCreateRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillCreateRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoGetRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoRequest;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillManifestUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillUpdateRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionConfirmRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionCreateRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionGetRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionInfoRequest;
@@ -47,7 +47,7 @@ public class InternalSkillController implements RemoteSkillService {
     @Override
     @PostMapping("/getSkillInfo")
     public R<SkillInfoRequest> getSkillInfo(@Validated @RequestBody SkillInfoGetRequest dto) {
-        return R.ok(skillService.getSkillInfo(dto.getSkillId()));
+        return R.ok(skillService.getSkillInfo(dto.getResourceId()));
     }
 
 
@@ -63,15 +63,18 @@ public class InternalSkillController implements RemoteSkillService {
         return R.ok(skillVersionService.getSkillVersion(dto));
     }
 
+
+
     @Override
-    @PostMapping("/initManifestUpload")
-    public R<UploadInitRespDTO> initManifestUpload(@Validated @RequestBody SkillManifestUploadInitRequest dto) {
-        return R.ok(skillService.initManifestUpload(dto));
+    @PostMapping("/confirmSkillVersion")
+    public R<Void> confirmSkillVersion(@Validated @RequestBody SkillVersionConfirmRequest dto) {
+        skillVersionService.confirmSkillVersion(dto);
+        return R.ok();
     }
 
     @Override
-    @PostMapping("/initAssetUpload")
-    public R<UploadInitRespDTO> initAssetUpload(@Validated @RequestBody SkillAssetUploadInitRequest dto) {
-        return R.ok(skillService.initAssetUpload(dto));
+    @PostMapping("/createSkillAsset")
+    public R<UploadInitRespDTO> createSkillAsset(@Validated @RequestBody SkillAssetCreateRequest dto) {
+        return R.ok(skillVersionService.createSkillAsset(dto));
     }
 }

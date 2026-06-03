@@ -2,6 +2,7 @@ package com.oriole.wisepen.ai.asset.domain.dto.req;
 
 import com.oriole.wisepen.ai.asset.constant.SkillValidationMsg;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,19 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SkillAssetUploadInitRequest {
+public class SkillVersionConfirmRequest {
     @NotBlank(message = SkillValidationMsg.SKILL_ID_NOT_BLANK)
-    private String skillId;
+    private String resourceId;
 
-    @NotBlank(message = SkillValidationMsg.SKILL_VERSION_NOT_BLANK)
-    private String version;
-
-    @NotBlank(message = SkillValidationMsg.SKILL_RELATIVE_PATH_NOT_BLANK)
-    private String relativePath;
-
-    private String kind;
-
-    private String md5;
-
-    private Long expectedSize;
+    @NotNull(message = SkillValidationMsg.SKILL_VERSION_NOT_BLANK)
+    private Integer version;
 }

@@ -1,10 +1,7 @@
 package com.oriole.wisepen.ai.asset.service;
 
-import com.oriole.wisepen.file.storage.api.domain.dto.UploadInitRespDTO;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillAssetUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillCreateRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoRequest;
-import com.oriole.wisepen.ai.asset.domain.dto.req.SkillManifestUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillUpdateRequest;
 
 import java.util.List;
@@ -12,13 +9,9 @@ import java.util.List;
 public interface ISkillService {
     String createSkill(SkillCreateRequest req, String userId);
 
-    void deleteSkills(List<String> skillIds);
+    void deleteSkills(List<String> resourceIds);
 
     void updateSkill(SkillUpdateRequest req);
 
-    SkillInfoRequest getSkillInfo(String skillId);
-
-    UploadInitRespDTO initManifestUpload(SkillManifestUploadInitRequest req);
-
-    UploadInitRespDTO initAssetUpload(SkillAssetUploadInitRequest req);
+    SkillInfoRequest getSkillInfo(String resourceId);
 }
