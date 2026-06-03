@@ -9,7 +9,17 @@ import java.util.Optional;
 
 @Repository
 public interface SkillRepository extends MongoRepository<SkillEntity, String> {
-    Optional<SkillEntity> findBySkillId(String skillId);
+    Optional<SkillEntity> findByResourceId(String resourceId);
 
-    void deleteBySkillIdIn(List<String> skillIds);
+    void deleteByResourceIdIn(List<String> resourceIds);
+
+    @Deprecated
+    default Optional<SkillEntity> findBySkillId(String skillId) {
+        return findByResourceId(skillId);
+    }
+
+    @Deprecated
+    default void deleteBySkillIdIn(List<String> skillIds) {
+        deleteByResourceIdIn(skillIds);
+    }
 }

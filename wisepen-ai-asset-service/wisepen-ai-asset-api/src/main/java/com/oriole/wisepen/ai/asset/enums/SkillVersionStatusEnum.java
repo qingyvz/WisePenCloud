@@ -9,23 +9,17 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum SkillSourceTypeEnum {
-    BY_AGENT("BY_AGENT"),
-    MANUAL("MANUAL");
+public enum SkillVersionStatusEnum {
+    DRAFT("DRAFT"),
+    CONFIRMED("CONFIRMED");
 
     @JsonValue
     private final String code;
 
     @JsonCreator
-    public static SkillSourceTypeEnum fromCode(String code) {
+    public static SkillVersionStatusEnum fromCode(String code) {
         if (code == null) {
             return null;
-        }
-        if ("PACKAGE_UPLOAD".equalsIgnoreCase(code) || "MANUAL_CREATE".equalsIgnoreCase(code)) {
-            return MANUAL;
-        }
-        if ("MARKDOWN_CONVERT".equalsIgnoreCase(code)) {
-            return BY_AGENT;
         }
         return Arrays.stream(values())
                 .filter(item -> item.code.equalsIgnoreCase(code))

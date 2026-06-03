@@ -8,6 +8,9 @@ import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoGetRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillManifestUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillUpdateRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionCreateRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionGetRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionInfoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -29,6 +32,14 @@ public interface RemoteSkillService {
     @Operation(summary = "获取 Skill 详情", description = "查询 Skill 主档信息与主要路径")
     @PostMapping("/internal/skill/getSkillInfo")
     R<SkillInfoRequest> getSkillInfo(@RequestBody SkillInfoGetRequest dto);
+
+    @Operation(summary = "创建 Skill 草稿版本", description = "创建或返回当前唯一草稿版本")
+    @PostMapping("/internal/skill/createSkillVersion")
+    R<SkillVersionInfoRequest> createSkillVersion(@RequestBody SkillVersionCreateRequest dto);
+
+    @Operation(summary = "获取 Skill 版本", description = "查询指定版本或当前确认版本的文件快照")
+    @PostMapping("/internal/skill/getSkillVersion")
+    R<SkillVersionInfoRequest> getSkillVersion(@RequestBody SkillVersionGetRequest dto);
 
     @Operation(summary = "初始化 SKILL.md 上传", description = "为指定 Skill 版本初始化 SKILL.md 上传")
     @PostMapping("/internal/skill/initManifestUpload")

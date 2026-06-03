@@ -40,26 +40,26 @@ public class SkillServiceImpl implements ISkillService {
     @Override
     public String createSkill(SkillCreateRequest dto, String userId) {
         ResourceCreateReqDTO resourceReq = ResourceCreateReqDTO.builder()
-                .resourceName(dto.getSkillName())
+                .resourceName(dto.getEffectiveName())
                 .resourceType(ResourceType.SKILL)
                 .ownerId(userId)
                 .build();
-        String skillId = remoteResourceService.createResource(resourceReq).getData();
-        if (!StringUtils.hasText(skillId)) {
+        String resourceId = remoteResourceService.createResource(resourceReq).getData();
+        if (!StringUtils.hasText(resourceId)) {
             throw new ServiceException(SkillError.SKILL_RESOURCE_REGISTER_FAILED);
         }
 
         SkillEntity entity = new SkillEntity();
-        entity.setSkillId(skillId);
-        entity.setResourceId(skillId);
-        entity.setSkillName(dto.getSkillName());
+        entity.setResourceId(resourceId);
+        entity.setName(dto.getEffectiveName());
         entity.setOwnerId(userId);
-        entity.setDescription(dto.getDescription());
-        entity.setSourceType(dto.getSourceType());
+        entity.setDescription(dto.getDescription() == null ? "" : dto.getDescription());
+        entity.setVersion(0);
+        entity.setSourceType(dto.getSourceType() == null ? com.oriole.wisepen.ai.asset.enums.SkillSourceTypeEnum.MANUAL : dto.getSourceType());
         entity.setSkillStatus(SkillStatusEnum.DRAFT);
         entity.setAuditStatus(SkillAuditStatusEnum.NOT_SUBMITTED);
         skillRepository.save(entity);
-        return skillId;
+        return resourceId;
     }
 
     @Override
@@ -73,10 +73,10 @@ public class SkillServiceImpl implements ISkillService {
 
     @Override
     public void updateSkill(SkillUpdateRequest dto) {
-        SkillEntity entity = skillRepository.findBySkillId(dto.getSkillId())
+        SkillEntity entity = skillRepository.findByResourceId(dto.getEffectiveResourceId())
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
-        if (dto.getSkillName() != null) {
-            entity.setSkillName(dto.getSkillName());
+        if (dto.getEffectiveName() != null) {
+            entity.setName(dto.getEffectiveName());
         }
         if (dto.getDescription() != null) {
             entity.setDescription(dto.getDescription());
@@ -86,7 +86,7 @@ public class SkillServiceImpl implements ISkillService {
 
     @Override
     public SkillInfoRequest getSkillInfo(String skillId) {
-        SkillEntity entity = skillRepository.findBySkillId(skillId)
+        SkillEntity entity = skillRepository.findByResourceId(skillId)
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
         SkillInfoRequest response = BeanUtil.copyProperties(entity, SkillInfoRequest.class);
         if (entity.getCurrentVersionInfo() != null) {
@@ -106,7 +106,7 @@ public class SkillServiceImpl implements ISkillService {
     @Override
     public UploadInitRespDTO initManifestUpload(SkillManifestUploadInitRequest dto) {
         validateVersion(dto.getVersion());
-        SkillEntity entity = skillRepository.findBySkillId(dto.getSkillId())
+        SkillEntity entity = skillRepository.findByResourceId(dto.getSkillId())
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
 
         UploadInitRespDTO response = skillStorageService.initManifestUpload(
@@ -123,7 +123,7 @@ public class SkillServiceImpl implements ISkillService {
     public UploadInitRespDTO initAssetUpload(SkillAssetUploadInitRequest dto) {
         validateVersion(dto.getVersion());
         validateRelativePath(dto.getRelativePath());
-        SkillEntity entity = skillRepository.findBySkillId(dto.getSkillId())
+        SkillEntity entity = skillRepository.findByResourceId(dto.getSkillId())
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
 
         UploadInitRespDTO response = skillStorageService.initAssetUpload(

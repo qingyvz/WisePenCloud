@@ -15,13 +15,25 @@ import java.time.LocalDateTime;
 @Document(collection = "wisepen_skill_items")
 public class SkillEntity extends SkillInfoBase {
     @Id
-    private String skillId;
-
     private String resourceId;
 
     private String storageBizTag;
 
+    /**
+     * Legacy embedded version snapshot. New writes use wisepen_skill_versions.
+     */
+    @Deprecated
     private SkillVersionEntity currentVersionInfo;
+
+    @Deprecated
+    public String getSkillId() {
+        return resourceId;
+    }
+
+    @Deprecated
+    public void setSkillId(String skillId) {
+        this.resourceId = skillId;
+    }
 
     @CreatedDate
     private LocalDateTime createTime;

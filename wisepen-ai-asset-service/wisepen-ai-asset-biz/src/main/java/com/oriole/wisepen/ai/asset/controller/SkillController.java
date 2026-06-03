@@ -13,8 +13,12 @@ import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoGetRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillInfoRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillManifestUploadInitRequest;
 import com.oriole.wisepen.ai.asset.domain.dto.req.SkillUpdateRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionCreateRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionGetRequest;
+import com.oriole.wisepen.ai.asset.domain.dto.req.SkillVersionInfoRequest;
 import com.oriole.wisepen.ai.asset.exception.SkillError;
 import com.oriole.wisepen.ai.asset.service.ISkillService;
+import com.oriole.wisepen.ai.asset.service.ISkillVersionService;
 import com.oriole.wisepen.resource.domain.dto.ResourceCheckPermissionReqDTO;
 import com.oriole.wisepen.resource.domain.dto.ResourceCheckPermissionResDTO;
 import com.oriole.wisepen.resource.enums.ResourceAccessRole;
@@ -36,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SkillController {
 
     private final ISkillService skillService;
+    private final ISkillVersionService skillVersionService;
     private final RemoteResourceService remoteResourceService;
 
     @Operation(summary = "创建 Skill", description = "创建一个归属于当前用户的 Skill 主档")
@@ -43,7 +48,6 @@ public class SkillController {
     @PostMapping("/createSkill")
     public R<String> createSkill(@Validated @RequestBody SkillCreateRequest dto) {
         String userId = SecurityContextHolder.getUserId().toString();
-        dto.setOwnerId(userId);
         return R.ok(skillService.createSkill(dto, userId));
     }
 
@@ -63,6 +67,24 @@ public class SkillController {
                 dto.getSkillId(), SecurityContextHolder.getUserId(), SecurityContextHolder.getGroupRoleMap()
         ));
         return R.ok(skillService.getSkillInfo(dto.getSkillId()));
+    }
+
+
+    @Operation(summary = "创建 Skill 草稿版本", description = "创建或返回当前唯一草稿版本")
+    @Log(title = "创建 Skill 草稿版本", businessType = BusinessType.INSERT)
+    @PostMapping("/createSkillVersion")
+    public R<SkillVersionInfoRequest> createSkillVersion(@Validated @RequestBody SkillVersionCreateRequest dto) {
+        assertSkillOwner(dto.getResourceId());
+        return R.ok(skillVersionService.createDraftVersion(dto));
+    }
+
+    @Operation(summary = "查询 Skill 版本", description = "查询指定版本或当前确认版本的文件快照")
+    @PostMapping("/getSkillVersion")
+    public R<SkillVersionInfoRequest> getSkillVersion(@Validated @RequestBody SkillVersionGetRequest dto) {
+        remoteResourceService.checkResPermission(new ResourceCheckPermissionReqDTO(
+                dto.getResourceId(), SecurityContextHolder.getUserId(), SecurityContextHolder.getGroupRoleMap()
+        ));
+        return R.ok(skillVersionService.getSkillVersion(dto));
     }
 
     @Operation(summary = "初始化 SKILL.md 上传", description = "为指定 Skill 版本初始化 SKILL.md 的固定 object key 上传")

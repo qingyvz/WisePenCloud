@@ -35,7 +35,7 @@ public class SkillStorageServiceImpl implements ISkillStorageService {
                 .md5(md5)
                 .extension(extension)
                 .scene(StorageSceneEnum.PRIVATE_DOC)
-                .objectKey(objectKey)
+                .bizTag(objectKey)
                 .expectedSize(expectedSize)
                 .build()), SkillError.SKILL_UPLOAD_INIT_FAILED);
     }
