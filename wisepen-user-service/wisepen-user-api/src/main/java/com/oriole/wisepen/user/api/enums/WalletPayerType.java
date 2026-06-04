@@ -7,9 +7,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TokenPayerType {
-	USER(1,"USER"),
-	GROUP(2,"GROUP");
+public enum WalletPayerType {
+    USER(1, "USER"),
+    GROUP(2, "GROUP");
 
 	private final int code;
 

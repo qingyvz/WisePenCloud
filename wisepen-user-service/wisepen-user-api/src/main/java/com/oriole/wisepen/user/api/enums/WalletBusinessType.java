@@ -7,11 +7,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TokenTransactionType {
-	REFILL(1, "REFILL"),
-	SPEND(2, "SPEND"),
-	TRANSFER_IN(3, "TRANSFER_IN"),
-	TRANSFER_OUT(4, "TRANSFER_OUT");
+public enum WalletBusinessType {
+    TOKEN(1, "TOKEN"),
+    COIN(2, "COIN");
+
 
 	private final int code;
 
