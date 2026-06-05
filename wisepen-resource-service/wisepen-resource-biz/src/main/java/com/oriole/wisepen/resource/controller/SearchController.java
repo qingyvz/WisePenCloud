@@ -36,7 +36,7 @@ public class SearchController {
                     请求：keyword 为搜索关键字，可为空；scope 指定搜索范围；page 和 size 控制分页。
                     约束：当前用户必须已登录；scope 必须是合法枚举。
                     处理：使用当前用户 ID 和小组角色上下文执行全文搜索，并应用资源可见性过滤与高亮处理；不返回当前用户无权查看的资源。
-                    失败：搜索范围参数不合法、分页参数不合法或搜索服务异常时按统一异常返回。
+                    失败：搜索服务执行失败 -> ResourceError.RESOURCE_SEARCH_FAILED。
                     响应：返回分页搜索命中列表和总数。
                     """
     )

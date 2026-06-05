@@ -25,7 +25,7 @@ public class InternalNoteController implements RemoteNoteService {
                     请求：resourceId 指定笔记资源。
                     约束：调用方必须通过内部服务调用边界；目标笔记必须存在。
                     处理：读取最近一个 FULL 快照，并追加其后的 DELTA 版本；如果没有 FULL 快照则返回空 fullSnapshot 和当前版本 0；不生成新版本。
-                    失败：笔记不存在或版本读取失败时按统一异常返回。
+                    失败：笔记不存在 -> NoteError.NOTE_NOT_FOUND；版本读取发生未处理异常 -> CommonError.INTERNAL_ERROR。
                     响应：返回资源 ID、最新版本号、完整快照和增量快照列表。
                     """
     )

@@ -33,7 +33,7 @@ public class AdminUserController {
                     请求：keyword 支持真实姓名模糊匹配，或学工号、用户名、用户 ID 精确匹配；status 和 identityType 为可选过滤条件；page 和 size 控制分页。
                     约束：当前操作者必须具备管理员身份；keyword 作为用户 ID 匹配时需可转换为数字。
                     处理：查询未逻辑删除用户并按创建时间倒序分页，返回前清空密码字段；不返回用户资料扩展详情。
-                    失败：当前操作者不是管理员、keyword 格式不合法或枚举参数不合法时按统一异常返回。
+                    失败：当前操作者不是管理员 -> PermissionError.UNAUTHORIZED。
                     响应：返回分页用户账号列表和总数。
                     """
     )
@@ -56,7 +56,7 @@ public class AdminUserController {
                     请求：userId 指定目标用户。
                     约束：当前操作者必须具备管理员身份；目标用户资料记录必须存在。
                     处理：读取 sys_user_profile 对应资料记录；不返回用户密码、钱包余额或小组成员信息。
-                    失败：目标用户资料不存在或当前操作者不是管理员时按统一异常返回。
+                    失败：当前操作者不是管理员 -> PermissionError.UNAUTHORIZED。
                     响应：返回目标用户资料实体。
                     """
     )
@@ -73,7 +73,7 @@ public class AdminUserController {
                     请求：userId 指定被维护用户；其余字段属于用户资料域，对应 sys_user_profile；未传字段不表达业务变更意图。
                     约束：当前操作者必须具备管理员身份；目标用户资料记录必须存在。
                     处理：更新用户资料域，不修改账号、昵称、真实姓名、头像、身份类型、认证方式、账号状态或密码；学生资料与教师资料的互斥清理不由本接口自动完成。
-                    失败：目标用户资料不存在、字段校验失败或底层更新失败时按统一异常返回。
+                    失败：当前操作者不是管理员 -> PermissionError.UNAUTHORIZED。
                     响应：成功时返回空结果。
                     """
     )
@@ -91,7 +91,7 @@ public class AdminUserController {
                     请求：userId 指定被维护用户；username、campusNo、email、mobile、verificationMode、status、identityType 等字段属于用户账号域，对应 sys_user。
                     约束：当前操作者必须具备管理员身份；目标用户必须存在；username 在全量用户中必须唯一；正常状态用户的 campusNo 必须唯一。
                     处理：更新用户账号域；当 identityType 发生变化时，同步清理不适用于新身份的资料字段：切换为学生时清空职称，切换为教师时清空专业、班级、入学年份和学历层次。
-                    失败：目标用户不存在、用户名重复、学工号冲突或字段校验失败时按统一异常返回。
+                    失败：当前操作者不是管理员 -> PermissionError.UNAUTHORIZED；用户名重复 -> UserError.USERNAME_ALREADY_EXISTS；学工号冲突 -> UserError.CAMPUS_NO_ALREADY_EXISTS。
                     响应：成功时返回空结果。
                     """
     )
@@ -109,7 +109,7 @@ public class AdminUserController {
                     请求：userId 指定目标用户；newPassword 为空时使用系统默认密码。
                     约束：当前操作者必须具备管理员身份；目标用户必须存在。
                     处理：更新目标用户密码密文，并删除该用户已有登录会话，强制目标用户重新登录。
-                    失败：目标用户不存在、密码格式不合法或当前操作者不是管理员时按统一异常返回。
+                    失败：当前操作者不是管理员 -> PermissionError.UNAUTHORIZED。
                     响应：成功时返回空结果。
                     """
     )

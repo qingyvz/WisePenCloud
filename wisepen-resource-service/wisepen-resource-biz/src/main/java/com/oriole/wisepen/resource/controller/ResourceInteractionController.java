@@ -32,7 +32,7 @@ public class ResourceInteractionController {
                     请求：resourceId 指定目标资源。
                     约束：当前用户必须已登录；本接口按用户与资源 ID 查询互动记录，不承担资源可见性校验。
                     处理：读取当前用户的资源互动记录；若不存在记录则返回默认未读、未点赞、未评分状态；不更新资源全局统计。
-                    失败：resourceId 为空或查询失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；互动查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
                     响应：返回当前用户对该资源的互动状态。
                     """
     )
@@ -49,7 +49,7 @@ public class ResourceInteractionController {
                     请求：resourceId 指定被阅读资源。
                     约束：当前用户必须已登录；目标资源必须存在。
                     处理：通过 Redis 窗口判断当前用户是否为窗口期内首次阅读；首次阅读会写入用户已读记录并增加资源阅读数，重复阅读不重复累加。
-                    失败：资源不存在、resourceId 为空或 Redis 读写异常时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；Redis 读写异常 -> CommonError.INTERNAL_ERROR。
                     响应：成功时返回空结果。
                     """
     )
@@ -68,7 +68,7 @@ public class ResourceInteractionController {
                     请求：resourceId 指定目标资源。
                     约束：当前用户必须已登录；目标资源必须存在。
                     处理：读取当前用户点赞状态并取反，写入新的点赞状态；点赞时资源点赞数加一，取消点赞时资源点赞数减一；不影响评分和阅读状态。
-                    失败：资源不存在、resourceId 为空或互动记录更新失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；互动记录更新失败 -> CommonError.INTERNAL_ERROR。
                     响应：成功时返回空结果。
                     """
     )
@@ -85,9 +85,9 @@ public class ResourceInteractionController {
             description = """
                     用途：记录或更新当前用户对资源的评分。
                     请求：resourceId 指定目标资源；score 为用户提交的评分值。
-                    约束：当前用户必须已登录；目标资源必须存在；score 必须满足请求 DTO 的字段校验。
+                    约束：当前用户必须已登录；目标资源必须存在；score 取值范围为 1 到 5。
                     处理：写入当前用户评分；首次评分会增加评分人数和总分，修改评分只调整总分差值，相同评分不会重复改变统计；不影响点赞和阅读状态。
-                    失败：资源不存在、评分字段非法或互动统计更新失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；互动统计更新失败 -> CommonError.INTERNAL_ERROR。
                     响应：成功时返回空结果。
                     """
     )

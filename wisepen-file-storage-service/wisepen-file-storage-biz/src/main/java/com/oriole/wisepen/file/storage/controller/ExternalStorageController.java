@@ -27,7 +27,7 @@ public class ExternalStorageController {
                     请求：rawBody 携带 objectKey、md5 和 size 等回调参数；请求头携带云厂商签名信息。
                     约束：回调必须通过存储提供方签名校验；objectKey 必须对应已初始化的上传记录。
                     处理：校验签名后更新文件记录为 AVAILABLE，写入 md5 和文件大小，并发布文件上传完成事件；重复回调会被识别并忽略。
-                    失败：签名非法、文件记录不存在、回调参数非法或记录更新失败时按统一异常返回。
+                    失败：回调签名非法 -> FileStorageError.STORAGE_PROVIDER_CALLBACK_SIGNATURE_INVALID；文件记录缺失或回调参数异常导致未处理失败 -> CommonError.INTERNAL_ERROR。
                     响应：成功时返回云厂商约定的 JSON 字符串。
                     """
     )

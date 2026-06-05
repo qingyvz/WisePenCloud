@@ -26,7 +26,7 @@ public class OpLogController {
                     请求：resourceId 指定笔记资源；page 和 size 控制分页。
                     约束：当前用户必须已登录；本接口当前不单独校验资源查看权限。
                     处理：按 resourceId 和时间倒序分页读取操作日志；不返回笔记快照，也不修改日志记录。
-                    失败：分页参数非法或日志查询失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；日志查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
                     响应：返回分页操作日志列表和总数。
                     """
     )

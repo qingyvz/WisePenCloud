@@ -39,7 +39,7 @@ public class GroupMemberController {
 					请求：groupId 指定要退出的小组。
 					约束：当前用户必须已登录且属于目标小组；OWNER 不能通过本接口退出小组。
 					处理：删除当前用户的小组成员关系，并刷新会话中的小组角色缓存为 NOT_MEMBER。
-					失败：当前用户不在小组中或当前用户是 OWNER 时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不在小组中 -> PermissionError.PERMISSION_DENIED；当前用户是 OWNER -> UserError.CANNOT_QUIT_GROUP_AS_OWNER。
 					响应：成功时返回空结果。
 					"""
 	)
@@ -57,7 +57,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组；targetUserIds 指定待移除成员。
 					约束：当前用户必须是目标小组 OWNER 或 ADMIN；不能移除自己；操作者角色权限必须高于被移除成员。
 					处理：删除符合权限条件的成员关系，并将被移除成员会话中的该小组角色刷新为 NOT_MEMBER。
-					失败：目标成员不存在、没有任何成员可被移除或当前用户权限不足时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不是 OWNER/ADMIN -> PermissionError.PERMISSION_DENIED；目标成员不存在或没有任何成员可被移除 -> UserError.GROUP_MEMBER_NOT_FOUND。
 					响应：成功时返回空结果。
 					"""
 	)
@@ -75,7 +75,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组；targetUserIds 指定成员列表；role 指定新角色。
 					约束：当前用户必须是目标小组 OWNER；不能修改自己的角色；目标成员必须属于该小组。
 					处理：批量更新目标成员角色，并刷新目标成员会话中的小组角色缓存；不修改小组 OWNER 自身角色。
-					失败：目标成员不存在、请求只包含操作者自己或当前用户不是 OWNER 时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不是 OWNER -> PermissionError.PERMISSION_DENIED；目标成员不存在或请求只包含操作者自己 -> UserError.GROUP_MEMBER_NOT_FOUND。
 					响应：成功时返回空结果。
 					"""
 	)
@@ -93,7 +93,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组；page 和 size 控制分页。
 					约束：当前用户必须已登录且属于目标小组。
 					处理：按角色升序、加入时间降序分页读取成员关系，并补充成员展示信息。
-					失败：当前用户不属于目标小组或分页参数不合法时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不属于目标小组 -> PermissionError.PERMISSION_DENIED。
 					响应：返回分页成员列表和总数。
 					"""
 	)
@@ -114,7 +114,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组。
 					约束：当前用户必须已登录；当前用户必须是目标小组成员。
 					处理：读取当前用户在目标小组的成员关系，并补充用户展示信息；不返回其他成员信息。
-					失败：当前用户不是目标小组成员时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不是目标小组成员 -> UserError.GROUP_MEMBER_NOT_FOUND。
 					响应：返回当前用户的小组成员详情。
 					"""
 	)
@@ -130,7 +130,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组。
 					约束：当前用户必须已登录，且认证上下文中必须包含该小组角色。
 					处理：从当前会话的小组角色上下文读取角色，不访问成员表刷新数据。
-					失败：当前用户不属于目标小组或角色上下文缺失时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不属于目标小组或角色上下文缺失 -> CommonError.SECURITY_CONTEXT_PARAM_MISSING。
 					响应：返回当前用户的小组角色枚举。
 					"""
 	)
@@ -146,7 +146,7 @@ public class GroupMemberController {
 					请求：groupId 指定目标小组；targetUserIds 指定成员列表；newTokenLimit 指定新的额度上限。
 					约束：当前用户必须是目标小组 OWNER；目标小组必须支持配置成员额度；新额度不能低于成员已使用额度。
 					处理：批量更新成员额度，并对额度高于已使用量的成员解除聊天熔断；不修改小组总余额。
-					失败：小组不存在、普通小组不允许配置额度、额度低于已使用量或当前用户不是 OWNER 时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不是 OWNER -> PermissionError.PERMISSION_DENIED；小组不存在 -> UserError.GROUP_NOT_EXIST；普通小组不允许配置额度 -> UserError.CANNOT_CONFIGURE_GROUP_WALLET_QUOTA；额度低于已使用量 -> UserError.WALLET_TOKEN_LIMIT_BELOW_USED。
 					响应：成功时返回空结果。
 					"""
 	)
@@ -164,7 +164,7 @@ public class GroupMemberController {
 					请求：page 和 size 控制分页。
 					约束：当前用户必须已登录。
 					处理：分页读取当前用户的小组成员记录，并补充对应小组展示信息；不计算实时消费中的未落库用量。
-					失败：分页参数不合法时按统一异常返回。
+					失败：未登录 -> PermissionError.NOT_LOGIN。
 					响应：返回分页的小组额度明细和总数。
 					"""
 	)

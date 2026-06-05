@@ -30,7 +30,7 @@ public class GroupResConfigController {
                     请求：groupId 指定目标小组。
                     约束：当前用户必须已登录且属于目标小组。
                     处理：读取小组资源配置；查不到配置时由服务层返回默认 FOLDER 模式。
-                    失败：当前用户不属于目标小组、groupId 格式非法或配置读取失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不属于目标小组 -> PermissionError.PERMISSION_DENIED。
                     响应：返回小组资源配置。
                     """
     )
@@ -47,7 +47,7 @@ public class GroupResConfigController {
                     请求：请求体携带 groupId、文件组织模式和默认成员动作权限配置。
                     约束：当前用户必须是目标小组 OWNER 或 ADMIN。
                     处理：首次调用时创建配置记录，后续调用更新已有配置；不直接迁移已存在资源的标签绑定。
-                    失败：当前用户不是小组管理员、groupId 格式非法或字段校验失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不是小组 OWNER/ADMIN -> PermissionError.PERMISSION_DENIED；小组资源模式不允许从 TAG 改为 FOLDER -> ResourceError.CANNOT_CHANGE_FILE_ORG_LOGIC_FROM_TAG_TO_FOLDER。
                     响应：成功时返回空结果。
                     """
     )

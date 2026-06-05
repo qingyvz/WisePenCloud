@@ -25,7 +25,7 @@ public class UISTaskController {
                     请求：userId 指定发起 UIS 认证的用户。
                     约束：调用方必须通过内部服务调用边界；任务状态必须仍存在于缓存中。
                     处理：从 Redis 读取用户 UIS 任务结果；不主动发起新的 UIS 认证，也不修改用户认证状态。
-                    失败：任务不存在或已过期时返回 UIS 任务不存在异常；缓存读取失败时按统一异常返回。
+                    失败：任务不存在或已过期 -> FudanExtensionError.UIS_TASK_NOT_FOUND；缓存读取发生未处理异常 -> CommonError.INTERNAL_ERROR。
                     响应：返回 UIS 任务结果和状态信息。
                     """
     )

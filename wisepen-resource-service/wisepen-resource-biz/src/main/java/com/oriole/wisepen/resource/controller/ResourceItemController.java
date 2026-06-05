@@ -43,7 +43,7 @@ public class ResourceItemController {
                     请求：resourceId 指定目标资源；newName 为新的资源名称。
                     约束：当前用户必须是资源所有者；目标资源必须存在。
                     处理：更新资源名称并同步搜索元数据中的资源名称；不修改资源类型、文件内容、标签绑定或权限配置。
-                    失败：资源不存在、当前用户不是资源所有者或名称字段校验失败时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；当前用户不是资源所有者 -> ResourceError.RESOURCE_PERMISSION_DENIED；搜索索引同步失败 -> ResourceError.RESOURCE_SEARCH_FAILED。
                     响应：成功时返回空结果。
                     """
     )
@@ -63,7 +63,7 @@ public class ResourceItemController {
                     请求：resourceIds 为待删除资源 ID 列表。
                     约束：当前用户必须是每个目标资源的所有者；列表中的资源必须存在。
                     处理：逐个校验所有权后执行软删除，将资源写入审计回收集合并从业务资源表移除；不在本接口直接抹除对象存储中的物理文件。
-                    失败：任一资源不存在、当前用户不是资源所有者或删除列表格式非法时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；任一资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；当前用户不是资源所有者 -> ResourceError.RESOURCE_PERMISSION_DENIED；搜索索引同步失败 -> ResourceError.RESOURCE_SEARCH_FAILED。
                     响应：成功时返回空结果。
                     """
     )
@@ -86,7 +86,7 @@ public class ResourceItemController {
                     请求：resourceId 指定目标资源；groupId 为空表示个人标签空间，不为空表示小组标签空间；tagIds 按业务顺序给出目标标签列表。
                     约束：个人标签更新必须由资源所有者发起，且 tagIds 必须包含唯一的路径标签并位于首位；小组标签更新允许小组 OWNER、ADMIN 操作，普通成员必须同时是资源所有者并满足标签挂载权限。
                     处理：个人空间会覆盖该资源在个人标签空间的绑定；若移入个人回收站，会剥离非个人小组绑定、资源独立权限和已计算小组 ACL。小组空间会覆盖该小组下的绑定，并触发资源 ACL 重算；不修改资源文件内容。
-                    失败：资源或标签不存在、标签不属于目标空间、个人路径标签非法、小组 FOLDER 模式下绑定多个标签、普通成员无标签挂载权限时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；当前用户不是资源所有者 -> ResourceError.RESOURCE_PERMISSION_DENIED；标签不存在或不属于目标空间 -> ResourceError.TAG_NODE_NOT_FOUND；个人路径标签数量不唯一 -> ResourceError.CANNOT_BIND_RESOURCE_TO_MULTIPLE_PATH_NODES；个人路径标签未放在首位 -> ResourceError.CANNOT_PLACE_RESOURCE_PATH_TAG_AFTER_TAGS；小组 FOLDER 模式下绑定多个标签 -> ResourceError.CANNOT_BIND_MULTIPLE_RESOURCE_TAGS_IN_FOLDER_MODE；普通成员无标签挂载权限 -> ResourceError.BIND_RESOURCE_TO_TAG_NODE_DENIED；搜索索引同步失败 -> ResourceError.RESOURCE_SEARCH_FAILED。
                     响应：成功时返回空结果。
                     """
     )
@@ -127,7 +127,7 @@ public class ResourceItemController {
                     请求：resourceId 指定目标资源；overrideGrantedActions 为空表示清空资源级覆盖动作；specifiedUsersGrantedActions 为空表示清空指定用户特权。
                     约束：当前用户必须是资源所有者；目标资源必须存在；动作列表必须是合法资源动作枚举。
                     处理：保存资源级覆盖权限和指定用户权限映射，并触发资源 ACL 重算；不修改资源标签绑定、默认小组权限或资源内容。
-                    失败：资源不存在、当前用户不是资源所有者或动作枚举非法时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；资源不存在 -> ResourceError.RESOURCE_NOT_FOUND；当前用户不是资源所有者 -> ResourceError.RESOURCE_PERMISSION_DENIED。
                     响应：成功时返回空结果。
                     """
     )
@@ -149,7 +149,7 @@ public class ResourceItemController {
                     请求：groupId 为空时查询当前用户个人资源空间，非空时查询指定小组空间；tagIds 为空表示查询该空间下全部可见资源，非空时按 tagQueryLogicMode 进行多标签筛选；resourceType、page、size、sortBy、sortDir 控制类型过滤、分页和排序。
                     约束：当前用户必须已登录；查询小组空间时必须属于目标小组；分页、排序字段、标签组合逻辑和资源类型必须合法。
                     处理：个人空间默认排除个人回收站体系下的资源，除非显式传入回收站内标签；小组空间按当前用户在小组中的角色和资源 ACL 查询可见资源，并批量补充当前标签名和互动统计；不返回当前用户无权查看的资源。
-                    失败：groupId 格式非法、当前用户不属于目标小组、分页参数非法或筛选枚举非法时按统一异常返回。
+                    失败：未登录 -> PermissionError.NOT_LOGIN；当前用户不属于目标小组 -> PermissionError.PERMISSION_DENIED。
                     响应：返回分页资源列表、总数、当前页资源的标签名映射和互动统计。
                     """
     )
