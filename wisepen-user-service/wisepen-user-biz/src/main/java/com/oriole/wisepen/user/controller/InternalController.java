@@ -37,12 +37,12 @@ public class InternalController implements RemoteUserService, RemoteWalletServic
     @Operation(
             summary = "内部获取用户展示信息",
             description = """
-                    用途：供其他微服务批量获取用户展示字段。
-                    请求：userIds 指定待查询用户 ID 列表。
-                    约束：调用方必须来自可信服务链路；userIds 为空时返回空映射。
-                    处理：批量读取用户账号展示字段并按 userId 组装映射；不返回密码、钱包、资料扩展或认证状态详情。
-                    失败：用户列表解析或查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
-                    响应：返回以用户 ID 为键的展示信息映射，不存在的用户不会出现在结果中。
+                    - 用途：供其他微服务批量获取用户展示字段。
+                    - 请求：userIds 指定待查询用户 ID 列表。
+                    - 约束：调用方必须来自可信服务链路；userIds 为空时返回空映射。
+                    - 处理：批量读取用户账号展示字段并按 userId 组装映射；不返回密码、钱包、资料扩展或认证状态详情。
+                    - 失败：用户列表解析或查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
+                    - 响应：返回以用户 ID 为键的展示信息映射，不存在的用户不会出现在结果中。
                     """
     )
     @GetMapping("/user/getUserDisplayInfo")
@@ -54,12 +54,12 @@ public class InternalController implements RemoteUserService, RemoteWalletServic
     @Operation(
             summary = "内部获取小组展示信息",
             description = """
-                    用途：供其他微服务批量获取小组展示字段。
-                    请求：groupIds 指定待查询小组 ID 列表。
-                    约束：调用方必须来自可信服务链路；groupIds 为空时返回空映射。
-                    处理：批量读取小组展示字段并按 groupId 组装映射；不返回成员列表、钱包额度或资源配置。
-                    失败：小组列表解析或查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
-                    响应：返回以小组 ID 为键的展示信息映射，不存在的小组不会出现在结果中。
+                    - 用途：供其他微服务批量获取小组展示字段。
+                    - 请求：groupIds 指定待查询小组 ID 列表。
+                    - 约束：调用方必须来自可信服务链路；groupIds 为空时返回空映射。
+                    - 处理：批量读取小组展示字段并按 groupId 组装映射；不返回成员列表、钱包额度或资源配置。
+                    - 失败：小组列表解析或查询发生未处理异常 -> CommonError.INTERNAL_ERROR。
+                    - 响应：返回以小组 ID 为键的展示信息映射，不存在的小组不会出现在结果中。
                     """
     )
     @GetMapping("/group/getGroupDisplayInfo")
@@ -72,12 +72,12 @@ public class InternalController implements RemoteUserService, RemoteWalletServic
     @Operation(
             summary = "内部结算金币交易",
             description = """
-                    用途：供资源交易等业务服务完成买方到卖方的金币结算。
-                    请求：traceId 用于幂等识别交易；buyerId、sellerId 和 price 描述买方、卖方和交易金额；meta 记录业务来源信息。
-                    约束：调用方必须来自可信服务链路；买方金币余额必须足够；traceId 已结算时接口幂等返回成功。
-                    处理：先扣减买方金币余额，再增加卖方金币余额，并分别写入钱包交易流水；不处理资源交付或订单状态。
-                    失败：买方金币余额不足 -> UserError.WALLET_COIN_INSUFFICIENT；金币钱包变动失败 -> UserError.WALLET_COIN_CHANGE_FAILED。
-                    响应：成功时返回空结果。
+                    - 用途：供资源交易等业务服务完成买方到卖方的金币结算。
+                    - 请求：traceId 用于幂等识别交易；buyerId、sellerId 和 price 描述买方、卖方和交易金额；meta 记录业务来源信息。
+                    - 约束：调用方必须来自可信服务链路；买方金币余额必须足够；traceId 已结算时接口幂等返回成功。
+                    - 处理：先扣减买方金币余额，再增加卖方金币余额，并分别写入钱包交易流水；不处理资源交付或订单状态。
+                    - 失败：买方金币余额不足 -> UserError.WALLET_COIN_INSUFFICIENT；金币钱包变动失败 -> UserError.WALLET_COIN_CHANGE_FAILED。
+                    - 响应：成功时返回空结果。
                     """
     )
     @PostMapping("/user/wallet/settleTrade")
