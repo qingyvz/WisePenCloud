@@ -225,8 +225,12 @@ public class SkillVersionServiceImpl implements ISkillVersionService {
     @Override
     @Transactional
     public void publishSkillVersion(SkillVersionPublishRequest req) {
+        SkillEntity skill = skillRepository.findByResourceId(req.getResourceId())
+                .orElseThrow(() -> new ServiceException(SkillError.SKILL_NOT_FOUND));
+
+        int draftVersion = skill.getVersion() + 1;
         // 检查当否是草案版本
-        SkillVersionEntity draft = skillVersionRepository.findByResourceIdAndVersion(req.getResourceId(), req.getDraftVersion())
+        SkillVersionEntity draft = skillVersionRepository.findByResourceIdAndVersion(req.getResourceId(), draftVersion)
                 .orElseThrow(() -> new ServiceException(SkillError.SKILL_VERSION_NOT_FOUND));
         if (draft.getStatus() != SkillVersionStatus.DRAFT) throw new ServiceException(SkillError.CANNOT_OPERATE_NON_DRAFT_SKILL_VERSION);
         // 核心资源缺失
@@ -238,11 +242,12 @@ public class SkillVersionServiceImpl implements ISkillVersionService {
             throw new ServiceException(SkillError.SKILL_ASSET_NOT_READY);
         }
         draft.setStatus(SkillVersionStatus.PUBLISHED);
-        skillRepository.updateVersionByResourceId(req.getResourceId(), req.getDraftVersion());
+        skillRepository.updateVersionByResourceId(req.getResourceId(), draftVersion);
         skillVersionRepository.save(draft);
 
+        eventPublisher.publishSkillPubEvent(skill, draft);
         // 新草案是 version + 1，直接新建
-        createDraftSkillVersion(req.getResourceId(), req.getDraftVersion() + 1);
+        createDraftSkillVersion(req.getResourceId(), draftVersion + 1);
     }
 
     private boolean isSkillDraftUnavailable(SkillAssetInfoBase asset) {
